@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   build_and_deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,6 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          # cache: 'npm' # Uncomment this ONLY if you have committed package-lock.json
 
       - name: Install dependencies
         run: npm install
@@ -30,7 +34,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist # Vite builds to the /dist folder
+          path: ./dist
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
